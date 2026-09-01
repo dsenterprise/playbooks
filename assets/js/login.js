@@ -16,8 +16,14 @@ document.querySelector('#login-form')?.addEventListener('submit', async event =>
         });
         const data = await response.json();
         if (!response.ok || !data.ok) throw new Error(data.error || 'Anmeldung fehlgeschlagen.');
-        message.textContent = 'Anmeldung erfolgreich. Seite wird neu geladen…';
-        window.location.reload();
+        /* Die eigene Anmeldeseite schickt weiter, das Anmeldefeld in der Seite
+           laedt neu. Das Ziel steht am Formular, damit es genau EINEN Handler
+           gibt - zwei Handler auf demselben Formular senden zwei Anfragen. */
+        const ziel = event.target.dataset.nachAnmeldung || '';
+        message.textContent = ziel
+            ? 'Anmeldung erfolgreich. Weiterleitung…'
+            : 'Anmeldung erfolgreich. Seite wird neu geladen…';
+        if (ziel) { window.location.href = ziel; } else { window.location.reload(); }
     } catch (error) {
         message.textContent = error.message;
         button.disabled = false;

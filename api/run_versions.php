@@ -23,5 +23,9 @@ try {
     }
     jsonRespond(['ok' => true, 'run_id' => $runId, 'run_slug' => $slug, 'versions' => listVersionSnapshots('run', $slug)]);
 } catch (Throwable $error) {
-    jsonRespond(['ok' => false, 'error' => 'Versionsfehler: ' . $error->getMessage()], 500);
+    /* Der genaue Grund gehoert ins Serverprotokoll, nicht zum Aufrufer: Pfade,
+       Klassennamen und Zeilennummern sagen einem Fremden mehr ueber die Anlage,
+       als er wissen muss. */
+    error_log('[playbooks] Versionsfehler: ' . $error);
+    jsonRespond(['ok' => false, 'error' => 'Versionsfehler. Bitte im Serverprotokoll nachsehen.'], 500);
 }

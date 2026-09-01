@@ -102,7 +102,11 @@ try {
 
     jsonRespond(['ok' => false, 'error' => 'Unbekannte Aktion.'], 400);
 } catch (Throwable $error) {
-    jsonRespond(['ok' => false, 'error' => 'Speicherfehler: ' . $error->getMessage()], 500);
+    /* Der genaue Grund gehoert ins Serverprotokoll, nicht zum Aufrufer: Pfade,
+       Klassennamen und Zeilennummern sagen einem Fremden mehr ueber die Anlage,
+       als er wissen muss. */
+    error_log('[playbooks] Speicherfehler: ' . $error);
+    jsonRespond(['ok' => false, 'error' => 'Speicherfehler. Bitte im Serverprotokoll nachsehen.'], 500);
 }
 
 function loadTemplatesVersioned(): array
@@ -174,6 +178,13 @@ function normalizeTemplate(array $input, array $existing): array
         $filename = preg_replace('/[^a-zA-Z0-9._-]/', '', cleanText($file['filename'] ?? '', 180));
         if ($filename === '') $filename = 'datei.md';
         $type = in_array($file['type'] ?? '', ['md', 'json'], true) ? $file['type'] : 'md';
+        /* Die Endung MUSS zum Typ passen. Ohne diese Zeilen kaeme ein Dateiname wie
+           test.php durch und landete spaeter im Ergebnisordner. Dass der Webserver
+           ihn dort nicht ausfuehrt, ist eine Frage seiner Konfiguration - und die
+           darf nicht die einzige Verteidigung sein. */
+        $stamm = (string) pathinfo($filename, PATHINFO_FILENAME);
+        if ($stamm === '') $stamm = 'datei';
+        $filename = $stamm . '.' . $type;
         $content = mb_substr((string) ($file['content'] ?? ''), 0, 1000000);
         $files[] = ['filename' => $filename, 'type' => $type, 'description' => cleanText($file['description'] ?? '', 1000), 'required' => (bool) ($file['required'] ?? false), 'prompt' => cleanText($file['prompt'] ?? '', 50000), 'content' => $content];
     }

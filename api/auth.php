@@ -28,13 +28,22 @@ try {
            wird verzoegert, ab dem zehnten fuer 15 Minuten abgewiesen. */
         $absender = hash('sha256', (string) ($_SERVER['REMOTE_ADDR'] ?? '') . '|playbooks');
         $jetzt = time();
-        $bremse = dbRead('login_attempts.json', []);
-        if (!is_array($bremse)) { $bremse = []; }
-        $eintrag = is_array($bremse[$absender] ?? null) ? $bremse[$absender] : ['versuche' => 0, 'zuletzt' => 0];
-        if ((int) $eintrag['versuche'] >= 10 && ($jetzt - (int) $eintrag['zuletzt']) < 900) {
+
+        /* Jeder Zugriff auf den Zaehler laeuft unter dbSperre. Ohne die Sperre lesen
+           parallele Versuche denselben alten Stand und erhoehen ihn jeweils nur um
+           eins - die Bremse liesse sich durch Gleichzeitigkeit unterlaufen. Das
+           Warten am Ende steht bewusst AUSSERHALB der Sperre, sonst wuerde jeder
+           Fehlversuch alle anderen Anmeldungen mit blockieren. */
+        $eintrag = dbSperre('login_attempts.json', static function () use ($absender, $jetzt) {
+            $bremse = dbRead('login_attempts.json', []);
+            if (!is_array($bremse)) { $bremse = []; }
+            $stand = is_array($bremse[$absender] ?? null) ? $bremse[$absender] : ['versuche' => 0, 'zuletzt' => 0];
+            if (($jetzt - (int) $stand['zuletzt']) > 900) { $stand = ['versuche' => 0, 'zuletzt' => 0]; }
+            return $stand;
+        });
+        if ((int) $eintrag['versuche'] >= 10) {
             jsonRespond(['ok' => false, 'error' => 'Zu viele Fehlversuche. Bitte spaeter erneut versuchen.'], 429);
         }
-        if (($jetzt - (int) $eintrag['zuletzt']) > 900) { $eintrag = ['versuche' => 0, 'zuletzt' => 0]; }
         $user = null;
         foreach ($users as $candidate) {
             if (is_array($candidate) && hash_equals((string) ($candidate['username'] ?? ''), $username)) {
@@ -43,15 +52,29 @@ try {
             }
         }
         if ($user === null || !password_verify($password, (string) ($user['password_hash'] ?? ''))) {
-            $eintrag['versuche'] = (int) $eintrag['versuche'] + 1;
-            $eintrag['zuletzt'] = $jetzt;
-            $bremse[$absender] = $eintrag;
-            dbWriteAtomic('login_attempts.json', $bremse);
-            usleep((int) min(2000000, 250000 * $eintrag['versuche']));
+            $versuche = dbSperre('login_attempts.json', static function () use ($absender, $jetzt) {
+                $bremse = dbRead('login_attempts.json', []);
+                if (!is_array($bremse)) { $bremse = []; }
+                $stand = is_array($bremse[$absender] ?? null) ? $bremse[$absender] : ['versuche' => 0, 'zuletzt' => 0];
+                if (($jetzt - (int) $stand['zuletzt']) > 900) { $stand = ['versuche' => 0, 'zuletzt' => 0]; }
+                $stand['versuche'] = (int) $stand['versuche'] + 1;
+                $stand['zuletzt'] = $jetzt;
+                $bremse[$absender] = $stand;
+                dbWriteAtomic('login_attempts.json', $bremse);
+                return (int) $stand['versuche'];
+            });
+            usleep((int) min(2000000, 250000 * $versuche));
             jsonRespond(['ok' => false, 'error' => 'Anmeldung fehlgeschlagen.'], 401);
         }
 
-        if (isset($bremse[$absender])) { unset($bremse[$absender]); dbWriteAtomic('login_attempts.json', $bremse); }
+        dbSperre('login_attempts.json', static function () use ($absender) {
+            $bremse = dbRead('login_attempts.json', []);
+            if (is_array($bremse) && isset($bremse[$absender])) {
+                unset($bremse[$absender]);
+                dbWriteAtomic('login_attempts.json', $bremse);
+            }
+            return null;
+        });
         session_regenerate_id(true);
         $_SESSION['user_id'] = (string) ($user['id'] ?? $user['username']);
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));

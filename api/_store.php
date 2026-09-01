@@ -42,6 +42,34 @@ function dbRead(string $filename, mixed $default): mixed
     }
 }
 
+/**
+ * Fuehrt Lesen, Rechnen und Schreiben unter EINER Sperre aus.
+ *
+ * dbWriteAtomic schreibt zwar unteilbar (Temp-Datei plus rename), aber zwischen
+ * dem Lesen und dem Schreiben liegt eine Luecke: parallele Aufrufe sehen denselben
+ * alten Stand und erhoehen ihn jeweils nur um eins. Bei einem Fehlversuchszaehler
+ * heisst das, zehn gleichzeitige Versuche zaehlen als einer.
+ */
+function dbSperre(string $filename, callable $arbeit): mixed
+{
+    ensureDbDir();
+    $pfad = dbPath($filename) . '.lock';
+    $griff = fopen($pfad, 'c');
+    if ($griff === false) {
+        throw new RuntimeException('Sperre konnte nicht angelegt werden.');
+    }
+
+    try {
+        if (!flock($griff, LOCK_EX)) {
+            throw new RuntimeException('Sperre konnte nicht gesetzt werden.');
+        }
+        return $arbeit();
+    } finally {
+        @flock($griff, LOCK_UN);
+        fclose($griff);
+    }
+}
+
 function dbWriteAtomic(string $filename, mixed $data): void
 {
     ensureDbDir();

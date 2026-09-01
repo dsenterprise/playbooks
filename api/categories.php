@@ -56,7 +56,11 @@ try {
 
     jsonRespond(['ok' => false, 'error' => 'Unbekannte Aktion.'], 400);
 } catch (Throwable $error) {
-    jsonRespond(['ok' => false, 'error' => 'Speicherfehler: ' . $error->getMessage()], 500);
+    /* Der genaue Grund gehoert ins Serverprotokoll, nicht zum Aufrufer: Pfade,
+       Klassennamen und Zeilennummern sagen einem Fremden mehr ueber die Anlage,
+       als er wissen muss. */
+    error_log('[playbooks] Speicherfehler: ' . $error);
+    jsonRespond(['ok' => false, 'error' => 'Speicherfehler. Bitte im Serverprotokoll nachsehen.'], 500);
 }
 
 function sortCategories(array &$categories): void

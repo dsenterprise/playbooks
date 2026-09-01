@@ -161,7 +161,11 @@ try {
 
     jsonRespond(['ok' => false, 'error' => 'Unbekannte Aktion.'], 400);
 } catch (Throwable $error) {
-    jsonRespond(['ok' => false, 'error' => 'Fehler: ' . $error->getMessage()], 500);
+    /* Der genaue Grund gehoert ins Serverprotokoll, nicht zum Aufrufer: Pfade,
+       Klassennamen und Zeilennummern sagen einem Fremden mehr ueber die Anlage,
+       als er wissen muss. */
+    error_log('[playbooks] Fehler: ' . $error);
+    jsonRespond(['ok' => false, 'error' => 'Fehler. Bitte im Serverprotokoll nachsehen.'], 500);
 }
 
 function templateMap(): array
@@ -297,7 +301,13 @@ function resolveVariables(string $content, array $variables): string
 
 function validFilename(string $filename): bool
 {
-    return $filename !== '' && $filename[0] !== '.' && !str_contains($filename, '..') && preg_match('/^[A-Za-z0-9._-]+$/', $filename) === 1;
+    /* Zweites Netz: auch Vorlagen, die vor der Endungspruefung gespeichert wurden,
+       koennen hier keine ausfuehrbare Datei erzeugen. Erlaubt sind genau die zwei
+       Formate, die die Anwendung schreibt. */
+    $endung = strtolower((string) pathinfo($filename, PATHINFO_EXTENSION));
+    return $filename !== '' && $filename[0] !== '.' && !str_contains($filename, '..')
+        && preg_match('/^[A-Za-z0-9._-]+$/', $filename) === 1
+        && in_array($endung, ['md', 'json'], true);
 }
 
 function resultBase(): string

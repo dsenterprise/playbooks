@@ -15,8 +15,13 @@ const playbooksTheme = (() => {
 
 window.Playbooks = (() => {
     const escape = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[char]));
+    /* Wird bei jedem Aufruf frisch gelesen: nach einer neuen Anmeldung steht ein
+       anderes Merkmal in der Seite. */
+    const csrfMerkmal = () => document.querySelector('meta[name="csrf-token"]')?.content || '';
     async function request(url, options = {}) {
-        const settings = {...options, headers:{...(options.body ? {'Content-Type':'application/json'} : {}), ...(options.headers || {})}};
+        const schreibend = (options.method || 'GET').toUpperCase() !== 'GET';
+        const merkmal = schreibend ? csrfMerkmal() : '';
+        const settings = {...options, headers:{...(options.body ? {'Content-Type':'application/json'} : {}), ...(merkmal ? {'X-CSRF-Token': merkmal} : {}), ...(options.headers || {})}};
         const response = await fetch(url, settings);
         let data;
         try { data = await response.json(); } catch { throw new Error('Der Server hat keine gültige Antwort geliefert.'); }

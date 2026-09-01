@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="/assets/css/runs.css">
     <link rel="stylesheet" href="/assets/css/navigation.css">
     <link rel="stylesheet" href="/assets/css/versioning.css">
+    <?php /* Sicherheitsmerkmal fuer schreibende Anfragen. Jede Seite, die diesen Kopf
+         einbindet, hat vorher startPlaybookSession() bzw. requirePlaybookLogin()
+         aufgerufen - deshalb wird hier nur gelesen und keine Sitzung gestartet:
+         session_start() nach begonnener Ausgabe koennte den Keks nicht mehr setzen.
+         Der Eintrag steht VOR app.js, damit das Skript ihn findet. */ ?>
+    <?php if (!empty($_SESSION['csrf_token'])): ?>
+    <meta name="csrf-token" content="<?= htmlspecialchars((string) $_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+    <?php endif ?>
     <script src="/assets/js/app.js"></script>
 </head>
 <body>

@@ -34,6 +34,33 @@ const TOKEN_ABLAGE = 'api_tokens.json';
  * Laesst die Anfrage durch oder beendet sie mit 401.
  * Muss VOR jeder Verarbeitung stehen.
  */
+/**
+ * Zweiter Riegel gegen fremd ausgeloeste Schreibzugriffe.
+ *
+ * Der Sitzungskeks traegt SameSite=Strict, deshalb schickt der Browser ihn bei einer
+ * Anfrage von fremder Seite gar nicht erst mit. Das Merkmal deckt die Faelle, in denen
+ * das nicht traegt: aeltere Browser, ein spaeter gelockertes SameSite, oder eine
+ * Unterseite derselben Site in fremder Hand. Lesende Anfragen bleiben frei, sie
+ * aendern nichts. Token-Anfragen ebenso: einen eigenen Kopfzeilen-Wert kann eine
+ * fremde Seite gar nicht erst setzen.
+ */
+function pruefeCsrf(): void
+{
+    $methode = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+    if (in_array($methode, ['GET', 'HEAD', 'OPTIONS'], true)) {
+        return;
+    }
+
+    $erwartet = (string) ($_SESSION['csrf_token'] ?? '');
+    $gesendet = (string) ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+    if ($erwartet === '' || $gesendet === '' || !hash_equals($erwartet, $gesendet)) {
+        jsonRespond([
+            'ok' => false,
+            'error' => 'Sicherheitsmerkmal fehlt oder passt nicht. Bitte die Seite neu laden und gegebenenfalls neu anmelden.',
+        ], 403);
+    }
+}
+
 function requireApiAuth(): void
 {
     if (tokenGueltig()) {
@@ -42,6 +69,7 @@ function requireApiAuth(): void
 
     startPlaybookSession();
     if (isset($_SESSION['user_id'])) {
+        pruefeCsrf();
         return;
     }
 

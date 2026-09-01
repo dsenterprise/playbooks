@@ -1,5 +1,6 @@
 # Inhalte der laufenden Installation gehoeren nicht ins Repository.
 database/*.json
+database/*.lock
 !database/categories.json
 !database/templates.json
 database/template_versions/
