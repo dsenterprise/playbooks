@@ -1,7 +1,4 @@
 </main>
-<footer class="app-footer">
-    <div class="container"><p class="footer-signature">Erstellt von David Selig · NEX Framework · lokales Modell nex-qwen-coder</p></div>
-</footer>
 <dialog id="confirmDialog" class="modal">
     <form method="dialog" class="modal-card">
         <p class="eyebrow">Bitte bestätigen</p>
