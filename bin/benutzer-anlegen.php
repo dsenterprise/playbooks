@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Legt einen Benutzer an oder setzt sein Passwort neu.
  *
- * Im Quelltext steht bewusst kein Zugang: Fehlt database/users.json, ist keine
+ * Im Quelltext steht bewusst kein Zugang: Fehlt storage/database/users.json, ist keine
  * Anmeldung moeglich. Der erste Benutzer wird hier erzeugt.
  *
  * Aufruf:  php bin/benutzer-anlegen.php <benutzername>
@@ -33,7 +33,7 @@ if (strlen($passwort) < 12) {
     exit(1);
 }
 
-$datei = __DIR__ . '/../database/users.json';
+$datei = __DIR__ . '/../storage/database/users.json';
 $benutzer = [];
 if (is_file($datei)) {
     $gelesen = json_decode((string) file_get_contents($datei), true);

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/_store.php';
-require_once __DIR__ . '/_versions.php';
-require_once __DIR__ . '/_guard.php';
+require_once __DIR__ . '/../../includes/_store.php';
+require_once __DIR__ . '/../../includes/_versions.php';
+require_once __DIR__ . '/../../includes/_guard.php';
 
 requireApiAuth();
 

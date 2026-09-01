@@ -1,9 +1,9 @@
 # Inhalte der laufenden Installation gehoeren nicht ins Repository.
-database/*.json
-database/*.lock
-!database/categories.json
-!database/templates.json
-database/template_versions/
-database/run_versions/
-results/*
-!results/.gitkeep
+storage/database/*.json
+storage/database/*.lock
+!storage/database/categories.json
+!storage/database/templates.json
+storage/database/template_versions/
+storage/database/run_versions/
+storage/results/*
+!storage/results/.gitkeep

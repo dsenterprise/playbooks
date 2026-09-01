@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/includes/session.php';
+require_once __DIR__ . '/../includes/session.php';
 requirePlaybookLogin();
 $activePage = 'runs';
 $pageTitle = 'Durchführungen';
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 <section class="page-heading">
     <div><a class="back-link" href="./">Übersicht</a><p class="eyebrow">Konkrete Vorhaben</p><h1>Durchführungen</h1><p class="lead">Ein Playbook anwenden, Eingaben festhalten und Ergebnisdateien erzeugen.</p></div>
@@ -22,4 +22,4 @@ document.querySelector('#createRunForm').addEventListener('submit',async event=>
 document.querySelector('[data-close]').addEventListener('click',()=>document.querySelector('#createRunDialog').close());list.addEventListener('click',async event=>{const button=event.target.closest('[data-run-action]');if(!button)return;const run=runs.find(item=>item.id===button.closest('[data-id]').dataset.id),action=button.dataset.runAction;if(action==='delete'&&!await Playbooks.confirm(`Durchführung „${run.name}“ samt Ergebnisdateien löschen?`,'Durchführung löschen'))return;button.disabled=true;try{await Playbooks.request('api/runs.php',{method:'POST',body:JSON.stringify({action,id:run.id})});Playbooks.toast(action==='delete'?'Durchführung gelöscht.':'Durchführung dupliziert.');await load();}catch(error){Playbooks.toast(error.message,'error');button.disabled=false;}});search.addEventListener('input',render);filter.addEventListener('change',render);load();})();
 </script>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

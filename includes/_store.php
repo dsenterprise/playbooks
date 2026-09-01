@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-const DB_DIR = __DIR__ . '/../database';
+/* Die Ablage liegt ausserhalb des Wurzelverzeichnisses des Webservers. Damit kann
+   ein Konfigurationsfehler sie nicht ausliefern - vorher war eine nginx-Regel die
+   einzige Verteidigung. */
+const DB_DIR = __DIR__ . '/../storage/database';
 
 function ensureDbDir(): void
 {

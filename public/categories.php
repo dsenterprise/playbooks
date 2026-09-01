@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/includes/session.php';
+require_once __DIR__ . '/../includes/session.php';
 requirePlaybookLogin();
 $activePage = 'categories';
 $pageTitle = 'Kategorien';
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 <section class="page-heading">
     <div><a class="back-link" href="./">Übersicht</a><p class="eyebrow">Bibliothek</p><h1>Kategorien</h1><p class="lead">Kategorien, Farben und Reihenfolge der Playbook-Templates verwalten.</p></div>
@@ -135,4 +135,4 @@ include __DIR__ . '/includes/header.php';
 })();
 </script>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

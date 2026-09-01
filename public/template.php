@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/includes/session.php';
+require_once __DIR__ . '/../includes/session.php';
 requirePlaybookLogin();
 $activePage = 'templates';
 $pageTitle = 'Template bearbeiten';
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 <section class="editor-heading">
     <div><a class="back-link" href="templates.php">Alle Templates</a><p class="eyebrow">Template-Editor</p><h1 id="templateTitle">Template wird geladen…</h1><p id="templateMeta" class="muted"></p></div>
@@ -45,4 +45,4 @@ include __DIR__ . '/includes/header.php';
 <script src="/assets/vendor/codemirror/javascript.min.js"></script>
 <script type="module" src="assets/js/template.js?v=2"></script>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

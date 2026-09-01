@@ -6,7 +6,7 @@
  * After successful login, the user is redirected to the dashboard (index.php).
  */
 
-require_once __DIR__ . '/includes/session.php';
+require_once __DIR__ . '/../includes/session.php';
 startPlaybookSession();
 
 // If already logged in, redirect to dashboard
@@ -17,7 +17,7 @@ if (isset($_SESSION['user_id'])) {
 
 $activePage = 'login';
 $pageTitle = 'Anmelden';
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 <section class="form-card" aria-labelledby="login-title" style="max-width:420px;margin:60px auto;">
     <p class="eyebrow">Geschützter Bereich</p>
@@ -32,4 +32,4 @@ include __DIR__ . '/includes/header.php';
 </section>
 <script src="assets/js/login.js"></script>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>
