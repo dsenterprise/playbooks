@@ -1,0 +1,8 @@
+# Inhalte der laufenden Installation gehoeren nicht ins Repository.
+database/*.json
+!database/categories.json
+!database/templates.json
+database/template_versions/
+database/run_versions/
+results/*
+!results/.gitkeep

@@ -1,0 +1,147 @@
+[
+  {
+    "name": "Playbook-Template entwerfen",
+    "description": "Aus Name und einem Satz entsteht ein vollständiges Playbook-Template: Konzept, Phasenkette, Felder als Übergabepunkte, KI-Prompts und Ergebnisdateien. Am Ende steht ein template.json, das direkt angelegt werden kann.",
+    "category_id": "cat-prozess",
+    "is_active": true,
+    "phases": [
+      {
+        "step": 0,
+        "title": "Zweck",
+        "description": "Name und ein Satz. Daraus entsteht das Konzept des neuen Playbooks.",
+        "icon": "Search",
+        "aiPrompt": "**Rolle:** Du bist mein Playbook-Generator.\n\n**Eingabe:**\n- Name: {{pb_name}}\n- Zweck: {{pb_zweck}}\n- Ausgefüllt von: {{pb_nutzer}}\n\n**Das Kettenprinzip — die wichtigste Regel beim Entwerfen eines Playbooks:**\n\nEin Playbook ist eine **Erzeugungskette**, kein Fragebogen.\n\n- Phase 1 fragt **wenig** ab (zwei bis vier kurze Angaben). Ihr KI-Prompt **erzeugt** daraus ein vollständiges Dokument.\n- Phase 2 hat ein Feld, das **das Ergebnis von Phase 1 aufnimmt**. Ihr Prompt beginnt mit „Basierend auf {{…}}: Erstelle …\" und erzeugt das nächste Dokument.\n- Phase 3 nimmt auf, was sie braucht — manchmal zwei Ergebnisse, manchmal nur das letzte.\n- Am Ende sind alle Variablen gefüllt, ohne dass jemand einen langen Fragebogen ausgefüllt hat.\n\nFelder sind also **Übergabepunkte für Ergebnisse**, nicht Fragen an den Nutzer.\n\n**Jedes Feld gibt es genau EINMAL.** Alle Feldwerte aller Phasen bilden eine gemeinsame\nSammlung — was in Phase 2 eingetragen wurde, steht in Phase 3, 4 und 5 als `{{…}}` zur\nVerfügung, ohne dass es dort noch einmal ein Feld braucht. Ein Ergebnis zweimal\nabzufragen ist reine Tipparbeit für den Nutzer.\n\n**Das Aufnahmefeld gehört in die unmittelbar folgende Phase** — auch wenn deren Prompt\nes nicht braucht. Sonst muss der Nutzer ein Ergebnis über mehrere Schritte\nzwischenparken, bis es endlich ein Feld findet.\n\nDer KI-Prompt **erzeugt**, er prüft nicht. „Erstelle daraus …\" ist richtig, „Prüfe, ob …\" ist falsch — außer in einer abschließenden Phase.\n\n**Aufgabe:** Erstelle daraus das **Konzept** des Playbooks:\n\n1. **Zweck in einem Satz** — geschärft. Beschreibt er ein Ergebnis oder nur eine Tätigkeit? Ein Playbook, dessen Zweck „X verwalten\" lautet, hat keinen Endpunkt.\n2. **Was am Ende vorliegt** — die Dateien oder Texte, die man danach in der Hand hat. Greifbar genug, dass zwei Leute dasselbe erwarten würden.\n3. **Was ausdrücklich nicht dazugehört** — zwei bis drei Punkte\n4. **Die Erzeugungskette** — vier bis sechs Glieder, je als Zeile:\n   `Phase → was hineingeht → was der Prompt daraus erzeugt`\n   Das erste Glied bekommt nur die kurzen Startangaben. Jedes weitere nimmt ein Ergebnis auf.\n5. **Die minimale Starteingabe** — welche zwei bis vier Angaben braucht Phase 1 wirklich? Alles Weitere soll erzeugt werden, nicht abgefragt.\n6. **Kategorie** — eine aus: cat-integration, cat-software, cat-business, cat-marketing, cat-prozess, cat-research, cat-starter\n\n**Format:** Klare Abschnitte. Deutsch, sachlich.",
+        "fields": [
+          {
+            "key": "pb_name",
+            "type": "text",
+            "label": "Name des Playbooks",
+            "placeholder": "z. B. Kunden-Onboarding, Störungsmeldung",
+            "required": true
+          },
+          {
+            "key": "pb_zweck",
+            "type": "textarea",
+            "label": "Wofür ist es da",
+            "placeholder": "Ein bis zwei Sätze. Was am Ende herauskommen soll.",
+            "required": true
+          },
+          {
+            "key": "pb_nutzer",
+            "type": "text",
+            "label": "Wer füllt es aus (optional)",
+            "placeholder": "z. B. jemand vom Fach unter Zeitdruck",
+            "required": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "title": "Phasen und Felder",
+        "description": "Aus dem Konzept entstehen die Phasen mit ihren Übergabepunkten. Frühere Ergebnisse sind bereits hinterlegt und müssen nicht erneut eingetragen werden.",
+        "icon": "FileText",
+        "aiPrompt": "**Rolle:** Du bist Prozessgestalter für Playbooks.\n\n**Konzept:**\n{{konzept}}\n\n**Das Kettenprinzip — die wichtigste Regel beim Entwerfen eines Playbooks:**\n\nEin Playbook ist eine **Erzeugungskette**, kein Fragebogen.\n\n- Phase 1 fragt **wenig** ab (zwei bis vier kurze Angaben). Ihr KI-Prompt **erzeugt** daraus ein vollständiges Dokument.\n- Phase 2 hat ein Feld, das **das Ergebnis von Phase 1 aufnimmt**. Ihr Prompt beginnt mit „Basierend auf {{…}}: Erstelle …\" und erzeugt das nächste Dokument.\n- Phase 3 nimmt auf, was sie braucht — manchmal zwei Ergebnisse, manchmal nur das letzte.\n- Am Ende sind alle Variablen gefüllt, ohne dass jemand einen langen Fragebogen ausgefüllt hat.\n\nFelder sind also **Übergabepunkte für Ergebnisse**, nicht Fragen an den Nutzer.\n\n**Jedes Feld gibt es genau EINMAL.** Alle Feldwerte aller Phasen bilden eine gemeinsame\nSammlung — was in Phase 2 eingetragen wurde, steht in Phase 3, 4 und 5 als `{{…}}` zur\nVerfügung, ohne dass es dort noch einmal ein Feld braucht. Ein Ergebnis zweimal\nabzufragen ist reine Tipparbeit für den Nutzer.\n\n**Das Aufnahmefeld gehört in die unmittelbar folgende Phase** — auch wenn deren Prompt\nes nicht braucht. Sonst muss der Nutzer ein Ergebnis über mehrere Schritte\nzwischenparken, bis es endlich ein Feld findet.\n\nDer KI-Prompt **erzeugt**, er prüft nicht. „Erstelle daraus …\" ist richtig, „Prüfe, ob …\" ist falsch — außer in einer abschließenden Phase.\n\n**Aufgabe:** Erstelle daraus den **Phasenplan**. Für jede Phase:\n\n1. **Titel** und ein Satz Beschreibung\n2. **Symbol** — genau eines aus: `Search`, `Code`, `FileText`, `CheckCircle`, `Rocket`\n3. **Felder** — je Feld: Schlüssel, Beschriftung, Typ (`text`, `textarea`, `checkbox`), Platzhaltertext, Pflicht ja/nein\n\n**Regeln für die Felder — hier entscheidet sich alles:**\n\n- Phase 1 hat **zwei bis vier kurze Felder**. Mehr nicht.\n- Jede weitere Phase hat **ein bis drei Felder, die Ergebnisse aufnehmen** (Typ `textarea`, Platzhalter „Das Ergebnis aus Phase N hier einfügen\") plus höchstens ein bis zwei optionale Steuerangaben.\n- Die letzte Phase darf zusätzlich Felder haben, die **Teile des letzten Prompt-Ergebnisses** aufnehmen — daraus entstehen die Ergebnisdateien.\n- Schlüssel nur `a-z A-Z 0-9 _`. Ein Umlaut bedeutet, dass die Variable nie ersetzt wird.\n- Ein guter Platzhalter zeigt ein **Beispiel**, keine Umschreibung.\n\n**Prüfe zum Schluss:** Wird jedes Ergebnis, das eine Phase erzeugt, von einer späteren Phase auch aufgenommen? Ein Ergebnis, das nirgends ankommt, ist eine gebrochene Kette.\n\n**Format:** Je Phase ein Block, Felder als Liste.",
+        "fields": [
+          {
+            "key": "konzept",
+            "type": "textarea",
+            "label": "Konzept",
+            "placeholder": "Das Ergebnis der vorigen Phase hier einfügen.",
+            "required": true
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "title": "Die Prompts",
+        "description": "Aus dem Phasenplan entstehen die KI-Prompts — der eigentliche Wert des Playbooks. Frühere Ergebnisse sind bereits hinterlegt und müssen nicht erneut eingetragen werden.",
+        "icon": "Code",
+        "aiPrompt": "**Rolle:** Du schreibst die KI-Prompts eines Playbooks. Sie sind der eigentliche Wert — alles andere ist Formular.\n\n**Konzept:**\n{{konzept}}\n\n**Phasenplan:**\n{{phasenplan}}\n\n**Das Kettenprinzip — die wichtigste Regel beim Entwerfen eines Playbooks:**\n\nEin Playbook ist eine **Erzeugungskette**, kein Fragebogen.\n\n- Phase 1 fragt **wenig** ab (zwei bis vier kurze Angaben). Ihr KI-Prompt **erzeugt** daraus ein vollständiges Dokument.\n- Phase 2 hat ein Feld, das **das Ergebnis von Phase 1 aufnimmt**. Ihr Prompt beginnt mit „Basierend auf {{…}}: Erstelle …\" und erzeugt das nächste Dokument.\n- Phase 3 nimmt auf, was sie braucht — manchmal zwei Ergebnisse, manchmal nur das letzte.\n- Am Ende sind alle Variablen gefüllt, ohne dass jemand einen langen Fragebogen ausgefüllt hat.\n\nFelder sind also **Übergabepunkte für Ergebnisse**, nicht Fragen an den Nutzer.\n\n**Jedes Feld gibt es genau EINMAL.** Alle Feldwerte aller Phasen bilden eine gemeinsame\nSammlung — was in Phase 2 eingetragen wurde, steht in Phase 3, 4 und 5 als `{{…}}` zur\nVerfügung, ohne dass es dort noch einmal ein Feld braucht. Ein Ergebnis zweimal\nabzufragen ist reine Tipparbeit für den Nutzer.\n\n**Das Aufnahmefeld gehört in die unmittelbar folgende Phase** — auch wenn deren Prompt\nes nicht braucht. Sonst muss der Nutzer ein Ergebnis über mehrere Schritte\nzwischenparken, bis es endlich ein Feld findet.\n\nDer KI-Prompt **erzeugt**, er prüft nicht. „Erstelle daraus …\" ist richtig, „Prüfe, ob …\" ist falsch — außer in einer abschließenden Phase.\n\n**Aufgabe:** Schreibe für **jede** Phase den vollständigen KI-Prompt nach diesem Bau:\n\n1. **Rolle** in einer Zeile, fett. Ein Fach mit Maßstab — „Du bist mein Charakter-Generator\", „Du bist Kameramann\". Nicht „Du bist ein hilfreicher Assistent\".\n2. **Eingabe** — die Felder dieser Phase als Platzhalter `{{…}}`, so eingesetzt, dass der Nutzer nichts wiederholen muss.\n3. **Aufgabe** — beginnt mit einem **Erzeugungsverb**: „Erstelle daraus …\", „Entwirf …\", „Übertrage …\". Danach eine nummerierte Liste dessen, was das Ergebnis enthalten muss.\n4. **Format** — wie die Ausgabe aussehen soll, damit sie in das Feld der nächsten Phase passt.\n\n**Regeln:**\n\n- **Der Prompt erzeugt, er prüft nicht.** „Erstelle daraus ein Fundament\" ist richtig. „Prüfe, ob der Zweck scharf ist\" gehört höchstens als Nebensatz dazu.\n- Nur die **letzte** Phase darf prüfend sein — dort werden die Endstücke zusammengesetzt und gegengehalten.\n- Wenn ein Ergebnis in mehreren Teilen zurück in Felder soll, gliedere den Prompt in klar getrennte Teile („TEIL 1 — …\", „TEIL 2 — …\").\n- Deutsche Sprache, sachlich, keine Emojis.\n- Platzhalter nur mit Schlüsseln, die es laut Phasenplan gibt.\n- Wo dem Prompt Angaben fehlen könnten: „Wo dir eine Angabe fehlt, triff eine plausible Entscheidung und markiere sie mit (Annahme).\"\n\n**Format:** Je Phase ein vollständiger Prompt, klar abgesetzt.",
+        "fields": [
+          {
+            "key": "phasenplan",
+            "type": "textarea",
+            "label": "Phasenplan",
+            "placeholder": "Das Ergebnis der vorigen Phase.",
+            "required": true
+          }
+        ]
+      },
+      {
+        "step": 3,
+        "title": "Dateien",
+        "description": "Was am Ende abfällt — und daraus die beiden JSON-Blöcke. Frühere Ergebnisse sind bereits hinterlegt und müssen nicht erneut eingetragen werden.",
+        "icon": "Rocket",
+        "aiPrompt": "**Rolle:** Du entwirfst Dokumentvorlagen und baust daraus die maschinenlesbare Fassung.\n\n**Phasenplan:**\n{{phasenplan}}\n\n**Prompts:**\n{{prompts}}\n\n**Aufgabe:** Drei Teile.\n\n---\n\n**TEIL 1 — DIE ERGEBNISDATEIEN**\n\nEntwirf die Dateien, die am Ende abfallen. Je Datei: Dateiname, Typ (`md` oder `json`), Beschreibung, Pflicht ja/nein, und der vollständige Inhalt als Vorlage mit Platzhaltern.\n\nRegeln:\n- Verwende nur Schlüssel, die laut Phasenplan existieren.\n- Die Vorlage muss auch dann lesbar sein, wenn optionale Felder leer bleiben — keine leeren Überschriften, keine leeren Tabellenzeilen.\n- Bei JSON: nach dem Einsetzen muss gültiges JSON entstehen (Anführungszeichen um Textwerte, keine Kommafehler).\n\n---\n\n**TEIL 2 — PHASEN-JSON**\n\nEin JSON-Array aller Phasen mit `step` (ab 0, lückenlos), `title`, `description`, `icon`, `aiPrompt`, `fields[]` (mit `key`, `type`, `label`, `placeholder`, `required`).\n\nSymbole nur aus `Search`, `Code`, `FileText`, `CheckCircle`, `Rocket`. Feldtypen nur `text`, `textarea`, `checkbox`. Vollständig, ohne Auslassungen, ohne Kommentare.\n\n---\n\n**TEIL 3 — DATEIEN-JSON**\n\nEin JSON-Array aller Dateien mit `filename`, `type`, `description`, `required`, `prompt`, `content`.\n\n---\n\n**Ausgabe:** Drei klar getrennte Teile. Keine Einleitung.",
+        "fields": [
+          {
+            "key": "prompts",
+            "type": "textarea",
+            "label": "Die Prompts",
+            "placeholder": "Das Ergebnis der vorigen Phase.",
+            "required": true
+          }
+        ]
+      },
+      {
+        "step": 4,
+        "title": "Anlegen",
+        "description": "Die JSON-Blöcke einsetzen, gegenprüfen, per Schnittstelle anlegen. Frühere Ergebnisse sind bereits hinterlegt und müssen nicht erneut eingetragen werden.",
+        "icon": "CheckCircle",
+        "aiPrompt": "**Rolle:** Du bist Prüfer und misstraust diesem Entwurf. Deine Aufgabe ist nicht, ihn schön zu finden.\n\n**PHASEN-JSON:**\n{{phasen_json}}\n\n**DATEIEN-JSON:**\n{{dateien_json}}\n\n**Aufgabe:**\n\n1. **Gültiges JSON?** Beide Blöcke müssen für sich ein Array sein. Nenne jeden Syntaxfehler mit Stelle.\n2. **Ist die Kette geschlossen?** Geh die Phasen der Reihe nach durch: Erzeugt Phase N ein Ergebnis, das Phase N+1 in einem Feld aufnimmt? Nenne jede gebrochene Stelle — das ist der häufigste Entwurfsfehler.\n3. **Ist Phase 1 schlank?** Mehr als vier Startfelder bedeutet, dass abgefragt wird, was erzeugt werden sollte.\n4. **Erzeugen die Prompts?** Nenne jeden Prompt, dessen Aufgabe nur „prüfen\" oder „zusammenfassen\" lautet — außer dem letzten.\n5. **Doppelte Felder?** Kommt derselbe `key` in mehreren Phasen vor? Das ist immer\n   ein Fehler — Variablen sind global. Nenne jede Dopplung.\n6. **Sitzt jedes Aufnahmefeld richtig?** Das Feld, das ein Ergebnis aufnimmt, gehört in\n   die Phase unmittelbar nach seiner Entstehung — nicht drei Schritte später.\n7. **Platzhalter und Felder** in beide Richtungen vergleichen: Platzhalter ohne Feld bleibt sichtbar stehen; Feld ohne Platzhalter wird umsonst ausgefüllt.\n8. **Zeichen prüfen:** jeder `key` nur `a-z A-Z 0-9 _`; `icon` aus der erlaubten Auswahl; Feld-`type` aus `text`/`textarea`/`checkbox`; Datei-`type` aus `md`/`json`; `step` ab 0 lückenlos.\n\nGib die korrigierten Blöcke vollständig zurück, wenn du etwas geändert hast. Sonst sag ausdrücklich, dass nichts zu ändern war.",
+        "fields": [
+          {
+            "key": "pb_kategorie",
+            "type": "text",
+            "label": "Kategorie",
+            "placeholder": "cat-integration | cat-software | cat-business | cat-marketing | cat-prozess | cat-research | cat-starter",
+            "required": true
+          },
+          {
+            "key": "phasen_json",
+            "type": "textarea",
+            "label": "PHASEN-JSON",
+            "placeholder": "Teil 2 aus der vorigen Phase. Beginnt mit [ und endet mit ].",
+            "required": true
+          },
+          {
+            "key": "dateien_json",
+            "type": "textarea",
+            "label": "DATEIEN-JSON",
+            "placeholder": "Teil 3 aus der vorigen Phase.",
+            "required": true
+          },
+          {
+            "key": "pb_pruefung",
+            "type": "textarea",
+            "label": "Ergebnis der Gegenprüfung",
+            "placeholder": "Das Ergebnis des Prompts dieser Phase.",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "files": [
+      {
+        "filename": "template.json",
+        "type": "json",
+        "description": "Das fertige Template — per update an die Schnittstelle schicken.",
+        "required": true,
+        "prompt": "",
+        "content": "{\n  \"name\": \"{{pb_name}}\",\n  \"description\": \"{{pb_zweck}}\",\n  \"category_id\": \"{{pb_kategorie}}\",\n  \"is_active\": true,\n  \"phases\": {{phasen_json}},\n  \"files\": {{dateien_json}}\n}\n"
+      },
+      {
+        "filename": "ANLEGEN.md",
+        "type": "md",
+        "description": "Anleitung zum Anlegen samt Befehlen und Prüfliste.",
+        "required": true,
+        "prompt": "",
+        "content": "# {{pb_name}} anlegen\n\n{{pb_zweck}}\n\n## Anlegen\n\n`template.json` im selben Ordner enthält das fertige Template. Zwei Schritte:\n`create` legt die Hülle an und liefert die Kennung, `update` schreibt den Inhalt.\n\n```bash\nAPI=${PLAYBOOKS_URL}/api/templates.php\n\nID=$(curl -s -X POST \"$API?action=create\" \\\n     -H 'Content-Type: application/json' \\\n     -d '{\"name\":\"{{pb_name}}\",\"category_id\":\"{{pb_kategorie}}\"}' \\\n     | python3 -c 'import sys,json; print(json.load(sys.stdin)[\"id\"])')\n\ncurl -s -X POST \"$API?action=update&id=$ID\" \\\n     -H 'Content-Type: application/json' \\\n     --data-binary @template.json\n\necho \"${PLAYBOOKS_URL}/template.php?id=$ID\"\n```\n\n`update` erwartet das ganze Objekt. Was in `template.json` fehlt, geht verloren.\n\n## Vor dem Anlegen prüfen\n\n- Gültiges JSON? `python3 -m json.tool template.json`\n- Ist die Kette geschlossen — nimmt jede Phase das Ergebnis der vorigen auf?\n- Zeigt jeder Platzhalter auf ein Feld, das es gibt?\n- Enthält jeder Feldschlüssel nur `a-z A-Z 0-9 _`?\n\nGegenprüfung ergab: {{pb_pruefung}}\n\n## Der Aufbau\n\n**Konzept:**\n\n{{konzept}}\n\n**Phasenplan:**\n\n{{phasenplan}}\n\n## Danach\n\nErste Durchführung anlegen und einmal ganz durchlaufen — erst dabei zeigt sich, ob die\nKette trägt und ob die Ergebnisse in die nächsten Felder passen.\n"
+      }
+    ],
+    "id": "tpl-442ea94d34259e3e",
+    "version": 7,
+    "created_at": "2026-08-04T17:37:53+00:00",
+    "updated_at": "2026-08-05T05:58:53+00:00"
+  }
+]

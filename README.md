@@ -1,0 +1,130 @@
+# Playbooks
+
+Struktur für die Zusammenarbeit mit KI. Ein Playbook gliedert ein wiederkehrendes
+Vorhaben in **Phasen**, fragt je Phase die nötigen Angaben ab und verbindet sie mit
+den passenden Prompts und vorbereiteten Ergebnisdateien.
+
+Der Gewinn ist nicht der einzelne Prompt. Der Gewinn ist, dass **Eingabe, Prompt und
+Ergebnis zusammenbleiben** — und beim nächsten Mal wieder da sind.
+
+## Wofür das gut ist
+
+Der Prompt, mit dem es gut lief, steckt in einem Chat von vor drei Wochen. Die Datei,
+die dabei herauskam, liegt im Download-Ordner. Die Angaben, die eingesetzt wurden,
+stehen nirgends mehr. Beim nächsten Mal fängt man wieder ungefähr bei dreißig Prozent an.
+
+Ein Playbook hält alles drei an einer Stelle:
+
+- **Vorlage** — ein Vorhaben, in Phasen gegliedert, mit Feldern und Prompts
+- **Durchführung** — eine konkrete Ausführung mit ausgefüllten Angaben
+- **Ergebnisse** — benannte Dateien statt Textblöcke im Verlauf
+
+## Absichtlich schlicht
+
+- **PHP 8.4**, kein Übersetzungsschritt, keine npm-Abhängigkeiten
+- **Keine Datenbank.** Alles liegt als JSON-Datei unter `database/`. Sichern heißt kopieren.
+- **Normales CSS und normales JavaScript.** Wer hineinschaut, sieht, was passiert.
+- **Keine Aufrufe nach draussen.** Editor und Schriften liegen unter `assets/vendor/`. Im Betrieb spricht die Seite mit keinem fremden Server.
+
+Wenn das Werkzeug selbst zum Projekt wird, ist es kein Werkzeug mehr.
+
+## Installation
+
+Voraussetzung ist PHP 8.4 und ein Webserver, dessen Wurzelverzeichnis auf den
+Projektordner zeigt.
+
+    git clone <repository> playbooks
+    cd playbooks
+
+    # Ablage beschreibbar machen (Benutzer des Webservers)
+    chown -R www-data:www-data database results
+    chmod 750 database results
+
+    # Ersten Benutzer anlegen — im Quelltext steht bewusst kein Zugang
+    php bin/benutzer-anlegen.php admin
+
+Danach die Seite aufrufen und anmelden. Es gibt keine öffentliche Startseite: ohne
+Anmeldung führt jeder Aufruf zur Anmeldeseite.
+
+**Mitgeliefert ist ein Start-Playbook:** *Playbook-Template entwerfen* — fünf Phasen, mit
+denen aus einem Namen und einem Satz ein vollständiges eigenes Playbook entsteht. Es ist
+zugleich das beste Beispiel für den Aufbau: Felder, Prompts mit Variablen und zwei
+Ergebnisdateien. Löschen kann man es jederzeit; danach ist die Ablage leer und gehört dir.
+
+### Zum Ausprobieren ohne Webserver
+
+    php -S 127.0.0.1:8080
+
+### Beispiel für nginx
+
+    server {
+        server_name playbooks.example.org;
+        root /pfad/zu/playbooks;
+        index index.php;
+
+        # Ablage, interne Bausteine und Ergebnisse nie ausliefern
+        location ~ ^/(database|includes|results)/ { deny all; }
+        location ~ ^/api/_                        { deny all; }
+        location ~ ^/bin/                         { deny all; }
+        location ~ /[.]                           { deny all; }
+        location ~* [.](md|lock|sh)$              { deny all; }
+
+        location /   { try_files $uri $uri/ /index.php?$query_string; }
+        location ~ [.]php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/run/php/php8.4-fpm.sock;
+        }
+    }
+
+Für den Betrieb über HTTPS empfehlen sich zusätzlich
+`Strict-Transport-Security`, `X-Content-Type-Options: nosniff`,
+`X-Frame-Options: SAMEORIGIN` und eine `Referrer-Policy`.
+
+## Sicherheit
+
+- **Kein Zugang im Quelltext.** Fehlt `database/users.json`, ist keine Anmeldung
+  möglich. Passwörter werden als bcrypt-Hash abgelegt.
+- **Bremse gegen Durchprobieren.** Fehlversuche werden je Absender gezählt: ab dem
+  dritten wird verzögert, ab dem zehnten für 15 Minuten abgewiesen. Der Absender wird
+  nur als Hash gespeichert — es liegen keine Adressen in der Ablage.
+- **Sitzung.** Cookie mit `Secure`, `HttpOnly` und `SameSite=Strict`, strikter Modus,
+  neue Sitzungskennung nach der Anmeldung, CSRF-Token für schreibende Zugriffe.
+- **Die Schnittstelle verlangt eine Sitzung.** Ohne Anmeldung antwortet sie mit 401.
+
+`database/` und `results/` enthalten Inhalte der laufenden Installation und gehören
+nicht ins Repository — die mitgelieferte `.gitignore` hält sie draußen.
+
+## Aufbau
+
+    index.php        Einstieg (leitet auf die Vorlagen bzw. die Anmeldung)
+    login.php        Anmeldung
+    templates.php    Liste der Vorlagen
+    template.php     Vorlage bearbeiten: Basis, Phasen, Dateien
+    runs.php         Liste der Durchführungen
+    run.php          Eine Durchführung ausfüllen und Ergebnisse erzeugen
+    categories.php   Kategorien
+    api/             Schnittstelle (JSON), Ablage-Helfer, Versionierung
+    includes/        Seitengerüst, Navigation, Sitzung
+    assets/          CSS, JavaScript, Editor
+    bin/             Werkzeuge für die Kommandozeile
+    database/        JSON-Ablage (nur der Startbestand ist im Repository)
+    results/         erzeugte Dateien, ein Ordner je Durchführung
+
+## Herkunft
+
+Die Playbooks sind aus einem größeren, selbst betriebenen System entstanden, in dem
+Vorlagen die Arbeit von KI-Agenten steuern. Diese Fassung ist die eigenständige,
+kleine Variante davon: für Arbeit, die man selbst macht, und für alle, die kein
+Agentensystem betreiben wollen.
+
+Entwickelt wurde sie mit einem lokal betriebenen Sprachmodell auf eigener Hardware.
+
+## Lizenz
+
+MIT — siehe `LICENSE`.
+
+Mitgeliefert wird **CodeMirror 5** unter `assets/vendor/codemirror/` — ebenfalls MIT,
+Copyright Marijn Haverbeke und andere. Der Lizenztext liegt daneben.
+
+Die Schriften **DM Sans** und **Manrope** unter `assets/vendor/fonts/` stehen unter der
+SIL Open Font License 1.1. Auch dort liegt der Lizenztext jeweils daneben als `OFL.txt`.

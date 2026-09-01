@@ -1,0 +1,51 @@
+[
+  {
+    "id": "cat-integration",
+    "name": "Integration",
+    "slug": "integration",
+    "color": "#3b82f6",
+    "sort_order": 10
+  },
+  {
+    "id": "cat-software",
+    "name": "Software",
+    "slug": "software",
+    "color": "#8b5cf6",
+    "sort_order": 20
+  },
+  {
+    "id": "cat-business",
+    "name": "Business",
+    "slug": "business",
+    "color": "#10b981",
+    "sort_order": 30
+  },
+  {
+    "id": "cat-marketing",
+    "name": "Marketing",
+    "slug": "marketing",
+    "color": "#f59e0b",
+    "sort_order": 40
+  },
+  {
+    "id": "cat-prozess",
+    "name": "Prozess",
+    "slug": "prozess",
+    "color": "#6366f1",
+    "sort_order": 50
+  },
+  {
+    "id": "cat-research",
+    "name": "Research",
+    "slug": "research",
+    "color": "#ec4899",
+    "sort_order": 60
+  },
+  {
+    "id": "cat-starter",
+    "name": "Starter Templates",
+    "slug": "starter",
+    "color": "#64748b",
+    "sort_order": 70
+  }
+]
